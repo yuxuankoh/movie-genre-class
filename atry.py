@@ -27,8 +27,6 @@ from util_functions import *
 
 densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
 
-# densenet_model.trainable = False
-
 combined_dense1 = Dense(512, activation='relu', kernel_initializer='he_normal')(densenet_model.layers[-2].output)
 combined_drop1 = Dropout(0.5)(combined_dense1)
 combined_dense2 = Dense(256, activation='relu', kernel_initializer='he_normal')(combined_drop1)
@@ -40,115 +38,15 @@ combined_output = Dense(5, activation='sigmoid', kernel_initializer='glorot_unif
 
 # # define new model
 model = Model(inputs=densenet_model.inputs, outputs=combined_output)
-
-
-from functools import partial, update_wrapper
-
-def weighted_binary_crossentropy(train_dataset):
-    """A weighted binary crossentropy loss function
-    that works for multilabel classification
-    """
-    label_columns = [col for col in train_dataset.columns if col not in ['Movie_Id', 'Movie_Title','Poster_Link']]
-    # obtain dataset here
-    data = train_dataset[label_columns]
-    # create a 2 by N array with weights for 0's and 1's
-    weights = np.zeros((2, data.shape[1]))
-    # calculates weights for each label in a for loop
-    for i in range(data.shape[1]):
-        weights_n, weights_p = (data.shape[0]/(2 * (data.iloc[:,i] == 0).sum())), (data.shape[0]/(2 * (data.iloc[:,i] == 1).sum()))
-        # weights could be log-dampened to avoid extreme weights for extremly unbalanced data.
-        weights[1, i], weights[0, i] = weights_p, weights_n
-
-    # The below is needed to be able to work with keras' model.compile()
-    def wrapped_partial(func, *args, **kwargs):
-        partial_func = partial(func, *args, **kwargs)
-        update_wrapper(partial_func, func)
-        return partial_func
-
-    def wrapped_weighted_binary_crossentropy(y_true, y_pred, class_weights):
-        y_pred = K.clip(y_pred, K.epsilon(), 1.0-K.epsilon())
-    # cross-entropy loss with weighting
-        out = -(y_true * K.log(y_pred)*class_weights[1] + (1.0 - y_true) * K.log(1.0 - y_pred)*class_weights[0])
-
-        return K.mean(out, axis=-1)
-
-    return wrapped_partial(wrapped_weighted_binary_crossentropy, class_weights=weights)
-   
-
-#initial_learning_rate = 0.00001 #0.0001
-#lr_schedule = keras.optimizers.schedules.ExponentialDecay(
-#    initial_learning_rate, decay_steps=100000, decay_rate=0.96, staircase=True #learning rate was originally 0.96
-#)
-
-#model.compile(
-#    loss=weighted_binary_crossentropy(train),#dyn_weighted_bincrossentropy,#,#f1_loss,#'binary_crossentropy',
-#    metrics=['accuracy', f1],
-#    optimizer=keras.optimizers.Adam(learning_rate=lr_schedule, clipvalue = 1),
-#)
-#densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
-#
-#combined_dense1 = Dense(512, activation='relu', kernel_initializer='he_normal')(densenet_model.layers[-2].output)
-#combined_drop1 = Dropout(0.5)(combined_dense1)
-#combined_dense2 = Dense(256, activation='relu', kernel_initializer='he_normal')(combined_drop1)
-#combined_drop2 = Dropout(0.5)(combined_dense2)
-#combined_dense3 = Dense(128, activation='relu', kernel_initializer='he_normal')(combined_drop2)
-#combined_drop3 = Dropout(0.5)(combined_dense3)
-#combined_output = Dense(5, activation='sigmoid', kernel_initializer='glorot_uniform', name = 'combined')(combined_drop3)
-#
-#def f1(y_true, y_pred):
-#    y_pred = K.round(y_pred)
-#    tp = K.sum(K.cast(y_true*y_pred, 'float'), axis=0)
-#    tn = K.sum(K.cast((1-y_true)*(1-y_pred), 'float'), axis=0)
-#    fp = K.sum(K.cast((1-y_true)*y_pred, 'float'), axis=0)
-#    fn = K.sum(K.cast(y_true*(1-y_pred), 'float'), axis=0)
-#
-#    p = tp / (tp + fp + K.epsilon())
-#    r = tp / (tp + fn + K.epsilon())
-#
-#    f1 = 2*p*r / (p+r+K.epsilon())
-#    f1 = tf.where(tf.math.is_nan(f1), tf.zeros_like(f1), f1)
-#    return K.mean(f1)
-#
-#def f1_loss(y_true, y_pred):
-#
-#    tp = K.sum(K.cast(y_true*y_pred, 'float'), axis=0)
-#    tn = K.sum(K.cast((1-y_true)*(1-y_pred), 'float'), axis=0)
-#    fp = K.sum(K.cast((1-y_true)*y_pred, 'float'), axis=0)
-#    fn = K.sum(K.cast(y_true*(1-y_pred), 'float'), axis=0)
-#
-#    p = tp / (tp + fp + K.epsilon())
-#    r = tp / (tp + fn + K.epsilon())
-#
-#    f1 = 2*p*r / (p+r+K.epsilon())
-#    f1 = tf.where(tf.math.is_nan(f1), tf.zeros_like(f1), f1)
-#    return 1 - K.mean(f1)
-    
-# # define new model
 model.load_weights('best_val_f1_1504211951.h5')
 
 
 def import_and_predict2(image):
-
-    list1 = model.predict(image)
-#    l = ['Drama', 'Comedy', 'Action', 'Thriller', 'Horror']
+    preds = model.predict(image)
     st.write('Prediction Results:')
     #TRY
-    return list1
-#    for i in range (5):
-        #st.write(list1[0][i])
-#        if (list1[0][i] > 0.5):
-#            st.write(l[i])
-    #UNCOMMENT
-#    if (list1[0][0] > 0.7936):
-#        st.write('Action') #Action
-#    if (list1[0][1] > 0.8046):
-#        st.write('Comedy') #Comedy
-#    if (list1[0][2] > 0.6425):
-#        st.write('Drama') #Drama
-#    if (list1[0][3] > 0.8419):
-#        st.write('Horror') #Horror
-#    if (list1[0][4] > 0.7251):
-#        st.write('Thriller') #Thriller
+    return preds
+
         
 def style_transfer (image, intended):
     image = np.asarray(image)
@@ -189,42 +87,33 @@ if (user_input):
     file = st.file_uploader("Upload an image file", type=["jpg", "png"])
 #    st.write(file)
     if file:
+        preprocess_input = keras.applications.densenet.preprocess_input
+        size = (256,256)
+
         image = Image.open(file).convert('RGB') #Open the Image and Convert
         st.image(image, use_column_width=True, caption = "Your input poster") #Print the image and show user
-        size = (256,256)
         
-        image = np.asarray(image.resize(size))
-        
-        
-        
-#        image1 = ImageOps.fit(image, size, Image.ANTIALIAS)
-#        image = image.resize(size)
+        image_resized = np.asarray(image.resize(size))
 
-        preprocess_input = keras.applications.densenet.preprocess_input
-
-
-        
-        user_img = np.expand_dims(image, axis=0)
-        x = np.expand_dims(preprocess_input(image), axis=0)
         #MODEL CALL
-        list1 = import_and_predict2(x)
+        preds = import_and_predict2(np.expand_dims(preprocess_input(image_resized), axis=0))
 
-        if (list1[0][0] > 0.5276367):
+        if (preds[0][0] > 0.5276367):
             st.write('Action') #Action
             gradindex = 1
-        if (list1[0][1] > 0.5806225):
+        if (preds[0][1] > 0.5806225):
             st.write('Comedy') #Comedy
             gradindex = 2
-        if (list1[0][2] > 0.39837518):
+        if (preds[0][2] > 0.39837518):
             st.write('Drama') #Drama
             gradindex = 3
-        if (list1[0][3] > 0.5521859):
+        if (preds[0][3] > 0.5521859):
             st.write('Horror') #Horror
             gradindex = 4
-        if (list1[0][4] > 0.51436293):
+        if (preds[0][4] > 0.51436293):
             st.write('Thriller') #Thriller
             gradindex = 5
-#        st.write(list1)
+#        st.write(preds)
         #GradCAM
     #    st.button("Examine my poster feature ")
         col1, col2, col3 , col4, col5 = st.beta_columns(5)
@@ -238,20 +127,20 @@ if (user_input):
             pass
         with col3 :
             pass
-        list1 = list1.tolist()[0]
+        preds = preds.tolist()[0]
         thresholds = {0: 0.5276367, 1: 0.5806225, 2:0.39837518, 3:0.5521859, 4:0.51436293}
         mapbackgenre = {0: 'Action', 1: 'Comedy', 2:'Drama', 3:'Horror', 4:'Thriller'}
         
 #        thresholds = {0: 0.7636, 1: 0.8046, 2:0.6425, 3:0.8419, 4:0.7251}
         if (examine_button):
         
-            grad_indexes =[list1.index(i) for i in list1 if (i > thresholds[list1.index(i)] and list1.index(i) != index)]
+            grad_indexes =[preds.index(i) for i in preds if (i > thresholds[preds.index(i)] and preds.index(i) != index)]
             if len(grad_indexes) >0:
                 cols = st.beta_columns(len(grad_indexes))
                 for j in range(len(cols)):
                     with cols[j]:
                         st.write("Your poster could be mistaken for " + mapbackgenre[grad_indexes[j]])
-                        runGradCAM(model, img = user_img[0,:,:,:], pred_index = grad_indexes[j], alpha = 0.5)
+                        runGradCAM(model, img = image, pred_index = grad_indexes[j], alpha = 0.5)
                 st.write("Not sure how to change it? Click on View Alternatives for quick suggestions")
             else:
                 st.write("Looks Good!")
