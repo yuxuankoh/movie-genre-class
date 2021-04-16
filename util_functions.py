@@ -5,7 +5,8 @@ import keras
 import streamlit as st
 import matplotlib.cm as cm
 from keras import backend as K
-
+from PIL import Image
+import cv2
 # class ourModel:
 #     def __init__(self, ):
 #         self.model = createBaseModel()
@@ -72,9 +73,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 
 def save_and_display_gradcam(img, heatmap, cam_path="cam.jpg", alpha=0.4):
     # Load the original image
-    base_img =  keras.preprocessing.image.img_to_array(img)
-    st.write("img size is ", base_img.shape)
-    
+    base_img = keras.preprocessing.image.img_to_array(img)
     # Rescale heatmap to a range 0-255
     heatmap = np.uint8(255 * heatmap)
 
@@ -84,14 +83,12 @@ def save_and_display_gradcam(img, heatmap, cam_path="cam.jpg", alpha=0.4):
     # Use RGB values of the colormap
     jet_colors = jet(np.arange(256))[:, :3]
     jet_heatmap = jet_colors[heatmap]
-
     # Create an image with RGB colorized heatmap
     jet_heatmap = keras.preprocessing.image.array_to_img(jet_heatmap)
-    jet_heatmap = jet_heatmap.resize((base_img.shape[1], base_img.shape[0]), Image.NEAREST)
-    jet_heatmap = np.asarray(jet_heatmap)#keras.preprocessing.image.img_to_array(jet_heatmap)
+    jet_heatmap = jet_heatmap.resize((base_img.shape[1], base_img.shape[0]), Image.BICUBIC)
+    jet_heatmap = keras.preprocessing.image.img_to_array(jet_heatmap)
     # Superimpose the heatmap on original image
     superimposed_img = jet_heatmap * alpha + base_img
-    st.image(keras.preprocessing.image.array_to_img(jet_heatmap))
     superimposed_img = keras.preprocessing.image.array_to_img(superimposed_img)
     # display grad CAM
     st.image(superimposed_img, use_column_width=True, caption = "Highlighted parts show parts that may be problematic")
@@ -102,8 +99,8 @@ def runGradCAM(model, img, pred_index, img_size = (256,256), last_conv_layer_nam
     preprocess_input = keras.applications.densenet.preprocess_input
     # Prepare image
     img_array = np.asarray(img.resize(img_size))
-    img_array= preprocess_input(img_array)
-    img_array_pred=np.expand_dims(img_array, axis = 0)
+    img_array = preprocess_input(img_array)
+    img_array_pred = np.expand_dims(img_array, axis = 0)
     # Remove last layer's sigmoid
     model.layers[-1].activation = None
 

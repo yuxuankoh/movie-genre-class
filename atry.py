@@ -26,7 +26,6 @@ import matplotlib.cm as cm
 from util_functions import *
 
 densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
-
 combined_dense1 = Dense(512, activation='relu', kernel_initializer='he_normal')(densenet_model.layers[-2].output)
 combined_drop1 = Dropout(0.5)(combined_dense1)
 combined_dense2 = Dense(256, activation='relu', kernel_initializer='he_normal')(combined_drop1)
@@ -54,12 +53,10 @@ def style_transfer (image, intended):
     #sample = tf.image.resize(sample, (256,256))
 
     hub_module = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
-
     # Stylize image.
     outputs = hub_module(tf.constant(image), tf.constant(intended))
     stylized_image = outputs[0]
-    # st.image(stylized_image[0,:,:,:])
-    #st.pyplot.imshow(sample)
+
     fig = plt.figure()
     plt.imshow(stylized_image[0,:,:,:])
     plt.axis('off')
@@ -85,7 +82,6 @@ if (user_input.lower() == 'thriller'):
     
 if (user_input):
     file = st.file_uploader("Upload an image file", type=["jpg", "png"])
-#    st.write(file)
     if file:
         preprocess_input = keras.applications.densenet.preprocess_input
         size = (256,256)
@@ -133,14 +129,13 @@ if (user_input):
         
 #        thresholds = {0: 0.7636, 1: 0.8046, 2:0.6425, 3:0.8419, 4:0.7251}
         if (examine_button):
-        
             grad_indexes =[preds.index(i) for i in preds if (i > thresholds[preds.index(i)] and preds.index(i) != index)]
             if len(grad_indexes) >0:
                 cols = st.beta_columns(len(grad_indexes))
                 for j in range(len(cols)):
                     with cols[j]:
                         st.write("Your poster could be mistaken for " + mapbackgenre[grad_indexes[j]])
-                        runGradCAM(model, img = image, pred_index = grad_indexes[j], alpha = 0.5)
+                        runGradCAM(model, img = image, pred_index = grad_indexes[j], alpha = 2)
                 st.write("Not sure how to change it? Click on View Alternatives for quick suggestions")
             else:
                 st.write("Looks Good!")
