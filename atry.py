@@ -197,21 +197,21 @@ if (user_input):
                     drama1 = Image.open('Drama1.jpg').convert('RGB')
                     #st.image(horror, use_column_width=True)
                     drama1 = np.asarray(drama1)
-                    drama1 = horror.astype(np.float32)[np.newaxis, ...] / 255.
+                    drama1 = drama1.astype(np.float32)[np.newaxis, ...] / 255.
                     style_transfer(image, drama1)
                 with col2:
                     st.write("Choice 2")
                     drama2 = Image.open('Drama2.jpg').convert('RGB')
                     #st.image(horror, use_column_width=True)
                     drama2 = np.asarray(drama2)
-                    drama2 = horror.astype(np.float32)[np.newaxis, ...] / 255.
+                    drama2 = drama2.astype(np.float32)[np.newaxis, ...] / 255.
                     style_transfer(image, drama2)
                 with col3:
                     st.write("Choice 3")
                     drama3 = Image.open('Drama2.jpg').convert('RGB')
                     #st.image(horror, use_column_width=True)
                     drama3 = np.asarray(drama3)
-                    drama3 = horror.astype(np.float32)[np.newaxis, ...] / 255.
+                    drama3 = drama3.astype(np.float32)[np.newaxis, ...] / 255.
                     style_transfer(image, drama3)
 
             elif (user_input == 'Action'):
@@ -259,7 +259,7 @@ if (user_input):
                     comedy3 = Image.open('Comedy3.jpg').convert('RGB')
                     #st.image(horror, use_column_width=True)
                     comedy3 = np.asarray(comedy3)
-                    comedy3 = comedy1.astype(np.float32)[np.newaxis, ...] / 255.
+                    comedy3 = comedy3.astype(np.float32)[np.newaxis, ...] / 255.
                     style_transfer(image, comedy3)
 
             elif (user_input == 'Thriller'):
@@ -276,7 +276,7 @@ if (user_input):
                     thriller2 = Image.open('Thriller2.jpg').convert('RGB')
                     #st.image(horror, use_column_width=True)
                     thriller2 = np.asarray(thriller2)
-                    thriller2 = thriller1.astype(np.float32)[np.newaxis, ...] / 255.
+                    thriller2 = thriller2.astype(np.float32)[np.newaxis, ...] / 255.
                     style_transfer(image, thriller2)
                 with col3:
                     st.write("Choice 3")
