@@ -25,6 +25,28 @@ import functools
 import matplotlib.cm as cm
 from util_functions import *
 
+import base64
+
+main_bg = "transparent1background.png"
+main_bg_ext = "png"
+
+side_bg = "transparent1background.png"
+side_bg_ext = "png"
+
+st.markdown(
+    f"""
+    <style>
+    .reportview-container {{
+        background: url(data:image/{main_bg_ext};base64,{base64.b64encode(open(main_bg, "rb").read()).decode()})
+    }}
+   .sidebar .sidebar-content {{
+        background: url(data:image/{side_bg_ext};base64,{base64.b64encode(open(side_bg, "rb").read()).decode()})
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
 combined_dense1 = Dense(512, activation='relu', kernel_initializer='he_normal')(densenet_model.layers[-2].output)
 combined_drop1 = Dropout(0.5)(combined_dense1)
@@ -81,7 +103,7 @@ if (user_input.lower() == 'thriller'):
     index = 4
     
 if (user_input):
-    file = st.file_uploader("Upload an image file", type=["jpg", "png"])
+    file = st.file_uploader("Upload an image file", type=["jpg", "jpg"])
     if file:
         preprocess_input = keras.applications.densenet.preprocess_input
         size = (256,256)
