@@ -35,19 +35,20 @@ st.write("Evaluate how good your movie poster is at conveying the genre of your 
 
 # user_input = st.text_input("Input the most desired genre (Action / Drama/ Thriller / Horror / Comedy): ")
 user_input = st.text_input("Input the intended genre of your film (Action / Drama/ Thriller / Horror / Comedy): ")
+user_input = user_input.lower()
 # possible_genres = ['action', 'comedy', 'drama', 'horror', 'thriller']
 
 # while user_input.lower() not in possible_genres:
 #     user_input = st.text_input("Input the intended genre of your film (Action / Drama/ Thriller / Horror / Comedy): ")
-if (user_input.lower() == 'action'):
+if (user_input == 'action'):
     index = 0
-elif (user_input.lower() == 'comedy'):
+elif (user_input == 'comedy'):
     index = 1
-elif (user_input.lower() == 'drama'):
+elif (user_input == 'drama'):
     index = 2
-elif (user_input.lower() == 'horror'):
+elif (user_input == 'horror'):
     index = 3
-elif (user_input.lower() == 'thriller'):
+elif (user_input == 'thriller'):
     index = 4
     
 if (user_input):
@@ -64,6 +65,9 @@ if (user_input):
         #MODEL CALL
         preds = MovieModel.import_and_predict(np.expand_dims(preprocess_input(image_resized), axis=0))
         preds = preds.tolist()[0]
+        for i in preds:
+            if i > MovieModel.thresholds[preds.index(i)]:
+                st.write(MovieModel.mapBackGenre[preds.index(i)])
 
         col1, col2, col3 , col4, col5 = st.beta_columns(5)
         with col1:
@@ -92,7 +96,7 @@ if (user_input):
     # Model that takes in user input
         if (view_alt):
             col1, col2, col3 = st.beta_columns(3)
-            if (user_input == 'Horror'):
+            if (user_input == 'horror'):
                 with col1:
                     st.write("Choice 1")
                     horror1 = Image.open('Horror1.jpg').convert('RGB')
@@ -115,7 +119,7 @@ if (user_input):
                     horror3 = horror3.astype(np.float32)[np.newaxis, ...] / 255.
                     MovieModel.style_transfer(raw_user_image, horror3)
 
-            elif (user_input == 'Drama'):
+            elif (user_input == 'drama'):
                 with col1:
                     st.write("Choice 1")
                     drama1 = Image.open('Drama1.jpg').convert('RGB')
@@ -138,7 +142,7 @@ if (user_input):
                     drama3 = drama3.astype(np.float32)[np.newaxis, ...] / 255.
                     MovieModel.style_transfer(raw_user_image, drama3)
 
-            elif (user_input == 'Action'):
+            elif (user_input == 'action'):
                 with col1:
                     st.write("Choice 1")
                     action1 = Image.open('Action1.jpg').convert('RGB')
@@ -161,7 +165,7 @@ if (user_input):
                     action3 = action3.astype(np.float32)[np.newaxis, ...] / 255.
                     MovieModel.style_transfer(raw_user_image, action3)
 
-            elif (user_input == 'Comedy'):
+            elif (user_input == 'comedy'):
                 with col1:
                     st.write("Choice 1")
                     comedy1 = Image.open('Comedy1.jpg').convert('RGB')
@@ -184,7 +188,7 @@ if (user_input):
                     comedy3 = comedy3.astype(np.float32)[np.newaxis, ...] / 255.
                     MovieModel.style_transfer(raw_user_image, comedy3)
 
-            elif (user_input == 'Thriller'):
+            elif (user_input == 'thriller'):
                 with col1:
                     st.write("Choice 1")
                     thriller1 = Image.open('Thriller1.jpg').convert('RGB')

@@ -9,6 +9,7 @@ from keras.layers import Dense, Dropout, Input, Flatten
 from PIL import Image
 import tensorflow_hub as hub
 import matplotlib.pyplot as plt
+
 class MovieClassificationModel:
     def __init__(self):
         self.thresholds = {0: 0.5276367, 1: 0.5806225, 2:0.39837518, 3:0.5521859, 4:0.51436293}
@@ -53,7 +54,7 @@ class MovieClassificationModel:
         # Stylize image
         outputs = self.hub_module(tf.constant(image), tf.constant(intended))
         stylized_image = outputs[0]
-
+        st.write('here right now', stylized_image)
         fig = plt.figure()
         plt.imshow(stylized_image[0,:,:,:])
         plt.axis('off')
