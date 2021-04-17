@@ -1,6 +1,6 @@
 import streamlit as st
 from PIL import Image
-import keras
+import tensorflow as tf
 import numpy as np
 from util_functions import *
 import base64
@@ -53,7 +53,7 @@ elif (user_input.lower() == 'thriller'):
 if (user_input):
     file = st.file_uploader("Upload an image file", type=["jpg", "jpg"])
     if file:
-        preprocess_input = keras.applications.densenet.preprocess_input
+        preprocess_input = tf.keras.applications.densenet.preprocess_input
         size = (256,256)
 
         raw_user_image = Image.open(file).convert('RGB') #Open the Image and Convert

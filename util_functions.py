@@ -1,6 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import keras
 # Display
 import streamlit as st
 import matplotlib.cm as cm
@@ -15,7 +14,7 @@ class MovieClassificationModel:
         self.thresholds = {0: 0.5276367, 1: 0.5806225, 2:0.39837518, 3:0.5521859, 4:0.51436293}
         self.size = (256,256)
         self.mapBackGenre =  {0: 'Action', 1: 'Comedy', 2:'Drama', 3:'Horror', 4:'Thriller'}
-        self.preprocess_input = keras.applications.densenet.preprocess_input
+        self.preprocess_input = tf.keras.applications.densenet.preprocess_input
         self.last_conv_layer_name = 'conv5_block32_2_conv'
         self.hub_module = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
         self.model = self.createBaseModel()
@@ -90,14 +89,14 @@ class MovieClassificationModel:
         return heatmap.numpy()
 
     def get_img_array(self, img_path, size):
-        img = keras.preprocessing.image.load_img(img_path, target_size=size)
-        array = keras.preprocessing.image.img_to_array(img)
+        img = tf.keras.preprocessing.image.load_img(img_path, target_size=size)
+        array = tf.keras.preprocessing.image.img_to_array(img)
         array = np.expand_dims(array, axis=0)
         return array
 
     def save_and_display_gradcam(self, img, heatmap, cam_path="cam.jpg", alpha=0.4):
         # Load the original image
-        base_img = keras.preprocessing.image.img_to_array(img)
+        base_img = tf.keras.preprocessing.image.img_to_array(img)
         # Rescale heatmap to a range 0-255
         heatmap = np.uint8(255 * heatmap)
 
@@ -108,17 +107,17 @@ class MovieClassificationModel:
         jet_colors = jet(np.arange(256))[:, :3]
         jet_heatmap = jet_colors[heatmap]
         # Create an image with RGB colorized heatmap
-        jet_heatmap = keras.preprocessing.image.array_to_img(jet_heatmap)
+        jet_heatmap = tf.keras.preprocessing.image.array_to_img(jet_heatmap)
         jet_heatmap = jet_heatmap.resize((base_img.shape[1], base_img.shape[0]), Image.BICUBIC)
-        jet_heatmap = keras.preprocessing.image.img_to_array(jet_heatmap)
+        jet_heatmap = tf.keras.preprocessing.image.img_to_array(jet_heatmap)
         # Superimpose the heatmap on original image
         superimposed_img = jet_heatmap * alpha + base_img
-        superimposed_img = keras.preprocessing.image.array_to_img(superimposed_img)
+        superimposed_img = tf.keras.preprocessing.image.array_to_img(superimposed_img)
         # display grad CAM
         st.image(superimposed_img, use_column_width=True, caption = "Highlighted parts show parts that may be problematic")
 
     def run_gradCAM(self, img, pred_index, alpha = 0.4):
-        preprocess_input = keras.applications.densenet.preprocess_input
+        preprocess_input = tf.keras.applications.densenet.preprocess_input
         # Prepare image
         img_array = np.asarray(img.resize(self.size))
         img_array = preprocess_input(img_array)
