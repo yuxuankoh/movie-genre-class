@@ -54,7 +54,6 @@ class MovieClassificationModel:
         # Stylize image
         outputs = self.hub_module(tf.constant(image), tf.constant(intended))
         stylized_image = outputs[0]
-        st.write('here right now', stylized_image)
         fig = plt.figure()
         plt.imshow(stylized_image[0,:,:,:])
         plt.axis('off')
