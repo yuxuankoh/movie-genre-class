@@ -22,7 +22,8 @@ class MovieClassificationModel:
         # self.gradCAMModel = self.createGradCAMModel(self.model)
 
     def createBaseModel(self):
-        densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
+        # densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
+        densenet_model = tf.keras.applications.DenseNet121(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
         combined_dense1 = Dense(512, activation='relu', kernel_initializer='he_normal')(densenet_model.layers[-2].output)
         combined_drop1 = Dropout(0.5)(combined_dense1)
         combined_dense2 = Dense(256, activation='relu', kernel_initializer='he_normal')(combined_drop1)
@@ -31,7 +32,7 @@ class MovieClassificationModel:
         combined_drop3 = Dropout(0.5)(combined_dense3)
         combined_output = Dense(5, activation='sigmoid', kernel_initializer='glorot_uniform', name = 'combined')(combined_drop3)
         model = Model(inputs=densenet_model.inputs, outputs=combined_output)
-        model.load_weights('best_val_f1_1504211951.h5')
+        # model.load_weights('best_val_f1_1504211951.h5')
         return model
 
     def createGradCAMModel(self, model):
