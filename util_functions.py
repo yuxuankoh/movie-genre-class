@@ -19,7 +19,7 @@ class MovieClassificationModel:
         self.last_conv_layer_name = 'conv5_block32_2_conv'
         self.hub_module = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
         self.model = self.createBaseModel()
-        self.gradCAMModel = self.createGradCAMModel(self.model)
+        # self.gradCAMModel = self.createGradCAMModel(self.model)
 
     def createBaseModel(self):
         densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
@@ -64,7 +64,7 @@ class MovieClassificationModel:
         # we compute the gradient of the top predicted class for our input image
         # with respect to the activations of the last conv layer
         with tf.GradientTape() as tape:
-            last_conv_layer_output, preds = self.gradCAMModel(img_array)
+            last_conv_layer_output, preds = self.createGradCAMModel(self.model)(img_array)
             if pred_index is None:
                 pred_index = tf.argmax(preds[0])
             class_channel = preds[:, pred_index]
