@@ -52,7 +52,7 @@ elif (user_input == 'thriller'):
     index = 4
     
 if (user_input):
-    file = st.file_uploader("Upload an image file", type=["jpg", "jpg"])
+    file = st.file_uploader("Upload an image file", type=["jpg", "png"])
     if file:
         preprocess_input = tf.keras.applications.densenet.preprocess_input
         size = (256,256)
