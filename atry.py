@@ -61,7 +61,7 @@ if (user_input):
         st.image(raw_user_image, use_column_width=True, caption = "Your input poster") #Print the image and show user
         
         image_resized = np.asarray(raw_user_image.resize(size))
-
+        
         #MODEL CALL
         preds = MovieModel.import_and_predict(np.expand_dims(preprocess_input(image_resized), axis=0))
         preds = preds.tolist()[0]
@@ -88,6 +88,10 @@ if (user_input):
                 for j in range(len(cols)):
                     with cols[j]:
                         st.write("Your poster could be mistaken for " + MovieModel.mapBackGenre[grad_indexes[j]])
+                        ###############################################################################################
+                        st.write("the pixel values just after reading in is:", np.asarray(raw_user_image))
+                        st.write("gradCAM running wrt to index:", grad_indexes[j])
+                        ###############################################################################################
                         MovieModel.run_gradCAM(img = raw_user_image, pred_index = grad_indexes[j], alpha = 2)
                 st.write("Not sure how to change it? Click on View Alternatives for quick suggestions")
             else:
