@@ -16,14 +16,14 @@ class MovieClassificationModel:
         self.size = (256,256)
         self.mapBackGenre =  {0: 'Action', 1: 'Comedy', 2:'Drama', 3:'Horror', 4:'Thriller'}
         self.preprocess_input = tf.keras.applications.densenet.preprocess_input
-        self.last_conv_layer_name = 'conv5_block32_2_conv'
+        self.last_conv_layer_name = 'Conv_2'#'conv5_block32_2_conv'
         self.hub_module = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
         self.model = self.createBaseModel()
         # self.gradCAMModel = self.createGradCAMModel(self.model)
 
     def createBaseModel(self):
         # densenet_model = tf.keras.applications.DenseNet169(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
-        densenet_model = tf.keras.applications.DenseNet121(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
+        densenet_model = tf.keras.applications.MobileNetV3Small(weights="imagenet", include_top=True, input_tensor=Input(shape=(256, 256, 3)))
         combined_dense1 = Dense(512, activation='relu', kernel_initializer='he_normal')(densenet_model.layers[-2].output)
         combined_drop1 = Dropout(0.5)(combined_dense1)
         combined_dense2 = Dense(256, activation='relu', kernel_initializer='he_normal')(combined_drop1)
