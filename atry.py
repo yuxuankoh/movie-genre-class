@@ -88,10 +88,10 @@ if (user_input):
                 for j in range(len(cols)):
                     with cols[j]:
                         st.write("Your poster could be mistaken for " + MovieModel.mapBackGenre[grad_indexes[j]])
-                        ###############################################################################################
-                        st.write("the pixel values just after reading in is:", np.asarray(raw_user_image))
-                        st.write("gradCAM running wrt to index:", grad_indexes[j])
-                        ###############################################################################################
+                        # ###############################################################################################
+                        # st.write("the pixel values just after reading in is:", np.asarray(raw_user_image))
+                        # st.write("gradCAM running wrt to index:", grad_indexes[j])
+                        # ###############################################################################################
                         MovieModel.run_gradCAM(img = raw_user_image, pred_index = grad_indexes[j], alpha = 2)
                 st.write("Not sure how to change it? Click on View Alternatives for quick suggestions")
             else:
