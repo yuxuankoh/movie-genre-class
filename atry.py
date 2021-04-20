@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
 import tensorflow as tf
-import keras
 import numpy as np
 from util_functions import *
 import base64
@@ -57,8 +56,8 @@ if (user_input):
     if file:
         preprocess_input = tf.keras.applications.densenet.preprocess_input
         size = (256,256)
-        raw_user_image = keras.preprocessing.image.load_img(file, target_size=size)
-        # raw_user_image = Image.open(file).convert('RGB') #Open the Image and Convert
+        
+        raw_user_image = Image.open(file)#.convert('RGB') #Open the Image and Convert
         st.image(raw_user_image, use_column_width=True, caption = "Your input poster") #Print the image and show user
         
         image_resized = np.asarray(raw_user_image.resize(size))
