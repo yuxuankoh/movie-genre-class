@@ -57,7 +57,7 @@ if (user_input):
         preprocess_input = tf.keras.applications.densenet.preprocess_input
         size = (256,256)
         
-        raw_user_image = Image.open(file)#.convert('RGB') #Open the Image and Convert
+        raw_user_image = Image.open(file).convert('RGB') #Open the Image and Convert
         st.image(raw_user_image, use_column_width=True, caption = "Your input poster") #Print the image and show user
         
         image_resized = np.asarray(raw_user_image.resize(size))
