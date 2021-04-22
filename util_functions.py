@@ -106,10 +106,10 @@ class MovieClassificationModel:
         # Use RGB values of the colormap
         jet_colors = jet(np.arange(256))[:, :3]
         jet_heatmap = jet_colors[heatmap]
-        ###############################################################################################
+        # ###############################################################################################
 
-        st.image(tf.keras.preprocessing.image.array_to_img(jet_heatmap), caption = "the heatmap before resizing looks like:")
-        ###############################################################################################
+        # st.image(tf.keras.preprocessing.image.array_to_img(jet_heatmap), caption = "the heatmap before resizing looks like:")
+        # ###############################################################################################
 
         # Create an image with RGB colorized heatmap
         jet_heatmap = tf.keras.preprocessing.image.array_to_img(jet_heatmap)
@@ -129,9 +129,9 @@ class MovieClassificationModel:
         img_array_pred = np.expand_dims(img_array, axis = 0)
         # Remove last layer's sigmoid
         self.model.layers[-1].activation = None
-        ###############################################################################################
-        st.write("the pixel values before gradCAM is:", img_array)
-        ###############################################################################################
+        # ###############################################################################################
+        # st.write("the pixel values before gradCAM is:", img_array)
+        # ###############################################################################################
         # Generate class activation heatmap
         heatmap = self.make_gradcam_heatmap(img_array_pred, pred_index=pred_index)
         # # Display heatmap
